@@ -70,7 +70,7 @@ begin
     ShowMessage(matchResult.Value);
 end;
 
-Veja o código completo da unit: [ResultMatching.pas](ResultMatching.pas)
+Veja o código completo na unit ResultMatching.pas
 
 
 
