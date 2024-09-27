@@ -1,6 +1,6 @@
 # Unit de Teste: `TestResultMatching`
 
-Documentando a utilização do framework **DUnit** para testar a unidade `ResultMatching`. 
+Documentando a utilização do framework **DUnit** para testar a unit `ResultMatching`. 
 A unit verifica o comportamento correto dos métodos e operadores implícitos, além de testar o sistema de Pattern Matching implementado.
 
 ## Estrutura da Unit
@@ -216,10 +216,10 @@ Para configurar o **Test Runner** e executar os testes automaticamente em um pro
 1. **Adicione a unit de teste (`TestResultMatching`) ao seu projeto VCL**.
    
 2. **No uses da unit principal**, adicione as seguintes units:
-   - `GUITestRunner` (que fornece a interface gráfica para rodar os testes).
-   - `TestResultMatching` (sua unit de teste).
+   - `GUITestRunner` (fornecerá a interface gráfica para rodar os testes).
+   - `TestResultMatching` (a unit de teste dos métodos, operadores implícitos etc.).
 
-3. **Chame o `GUITestRunner` para iniciar a execução dos testes**. Isso será feito no bloco `begin-end` do projeto principal.
+3. **Chame o `GUITestRunner` para iniciar a execução dos testes**. Isso será feito no bloco `begin-end` no source do projeto principal.
 
 #### Exemplo
 
