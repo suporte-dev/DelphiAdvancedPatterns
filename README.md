@@ -27,7 +27,7 @@ var
   error: TErrResult;
 begin
   // Simulando um sucesso
-  resultSuccess := TResultOptions<Integer>(10);
+  resultSuccess := 10;
 
   // Utilizando o método Match para tratar o resultado
   matchResult := resultSuccess.Match<string>(
@@ -49,7 +49,7 @@ begin
 
   // Simulando um erro
   error := TErrResult.Create(404, 'Recurso não encontrado');
-  resultError := TResultOptions<Integer>(error);
+  resultError := error;
 
   // Utilizando o método Match para tratar o erro
   matchResult := resultError.Match<string>(
