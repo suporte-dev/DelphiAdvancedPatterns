@@ -7,7 +7,6 @@ A unit `ResultMatching` fornece uma estrutura genérica para o tratamento de res
 - [Visão Geral](#visão-geral)
 - [Tipos e Classes](#tipos-e-classes)
   - [TError](#terror)
-  - [TErrResult](#terrresult)
   - [TMatchResult\<U\>](#tmatchresultu)
   - [TResultOptions\<T\>](#tresultoptionst)
 - [Como Utilizar](#como-utilizar)
@@ -18,7 +17,7 @@ A unit `ResultMatching` fornece uma estrutura genérica para o tratamento de res
 
 A unit `ResultMatching` foi projetada para facilitar o gerenciamento de resultados de operações que podem resultar em sucesso ou erro. Utilizando tipos genéricos, ela oferece flexibilidade para trabalhar com diferentes tipos de dados e erros, melhorando a legibilidade e a manutenção do código.
 
-## Tipos e Classes
+### Tipos e Classes
 
 ### TError
 
