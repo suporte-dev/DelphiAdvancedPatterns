@@ -1,6 +1,7 @@
 # Unit de Teste: `TestResultMatching`
 
-Documentando a utilização do framework **DUnit** para testar a unidade `ResultMatching`. A unit verifica o comportamento correto dos métodos e operadores implícitos, além de testar o sistema de Pattern Matching implementado.
+Documentando a utilização do framework **DUnit** para testar a unidade `ResultMatching`. 
+A unit verifica o comportamento correto dos métodos e operadores implícitos, além de testar o sistema de Pattern Matching implementado.
 
 ## Estrutura da Unit
 
