@@ -211,7 +211,7 @@ executar o **DUnit Test Runner** ou:
 ### Como configurar o Test Runner para ser executado em um projeto VCL automaticamente
 sem a criação de um DUnit Project:
 
-Para configurar o **Test Runner** para executar os testes automaticamente em um projeto VCL, siga os seguintes passos:
+Para configurar o **Test Runner** e executar os testes automaticamente em um projeto VCL, siga os seguintes passos:
 
 1. **Adicione a unit de teste (`TestResultMatching`) ao seu projeto VCL**.
    
