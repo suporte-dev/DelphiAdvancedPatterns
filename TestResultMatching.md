@@ -33,7 +33,7 @@ type
     procedure TestMatchSuccess;
     procedure TestMatchError;
   end;
-
+```
 ### Implementação dos Testes
 
 #### Teste `TestImplicitOk`
@@ -49,7 +49,7 @@ begin
   CheckTrue(Result.IsOk, 'O resultado deveria ser Ok.');
   CheckEquals(10, Result.Value, 'O valor esperado é 10.');
 end;
-
+```
 #### Teste `TestImplicitErr`
 
 Verifica se o operador implícito para um erro (`TResultOptions`) funciona corretamente.
@@ -66,7 +66,7 @@ begin
   CheckEquals(404, Result.Error.Code, 'O código de erro esperado é 404.');
   CheckEquals('Not Found', Result.Error.Description, 'A descrição do erro deveria ser "Not Found".');
 end;
-
+```
 
 #### Teste `TestIsOk`
 
@@ -80,7 +80,7 @@ begin
   Result := 10;
   CheckTrue(Result.IsOk, 'O resultado deveria ser Ok.');
 end;
-
+```
 
 #### Teste `TestIsErr`
 
@@ -96,7 +96,7 @@ begin
   Result := Error;
   CheckTrue(Result.IsErr, 'O resultado deveria ser Err.');
 end;
-
+```
 
 #### Teste `TestValueSuccess`
 
@@ -110,7 +110,7 @@ begin
   Result := 42;
   CheckEquals(42, Result.Value, 'O valor esperado é 42.');
 end;
-
+```
 
 #### Teste `TestErrorFailure`
 
@@ -127,7 +127,7 @@ begin
   CheckEquals(400, Result.Error.Code, 'O código de erro esperado é 400.');
   CheckEquals('Bad Request', Result.Error.Description, 'A descrição do erro deveria ser "Bad Request".');
 end;
-
+```
 
 #### Teste `TestMatchSuccess`
 
@@ -156,7 +156,7 @@ begin
   CheckTrue(MatchResult.IsOk, 'O resultado do Match deveria ser Ok.');
   CheckEquals('Sucesso: 10', MatchResult.Value, 'A mensagem de sucesso deveria ser "Sucesso: 10".');
 end;
-
+```
 
 #### Teste `TestMatchError`
 
@@ -187,7 +187,7 @@ begin
   CheckFalse(MatchResult.IsOk, 'O resultado do Match deveria ser Err.');
   CheckEquals('Erro: 500 - Erro Interno', MatchResult.Value, 'A mensagem de erro deveria ser "Erro: 500 - Erro Interno".');
 end;
-
+```
 
 ### Registro dos Testes
 
@@ -197,7 +197,7 @@ Os testes são registrados no bloco `initialization`, o que garante que eles sej
 initialization
   // Registro da suite de testes
   RegisterTest(TestTResultOptions.Suite);
-
+```
 
 ### Conclusão
 
@@ -238,7 +238,7 @@ begin
   GUITestRunner.RunRegisteredTests; // Inicializa o Test Runner do DUnit
   Application.Run;
 end.
-
+```
 
 
 
