@@ -69,6 +69,7 @@ begin
   else
     ShowMessage(matchResult.Value);
 end;
+```
 
 Veja o código completo na unit ResultMatching.pas
 
