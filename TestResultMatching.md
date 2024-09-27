@@ -3,6 +3,28 @@
 Documentando a utilização do framework **DUnit** para testar a unit `ResultMatching`. 
 A unit verifica o comportamento correto dos métodos e operadores implícitos, além de testar o sistema de Pattern Matching implementado.
 
+# Sumário
+
+- [Visão Geral](#visão-geral)
+- [Tipos e Classes](#tipos-e-classes)
+  - [TError](#terror)
+  - [TErrResult](#terrresult)
+  - [TMatchResult<U>](#tmatchresultu)
+  - [TResultOptions<T>](#tresultoptionst)
+- [Implementação dos Testes](#implementação-dos-testes)
+  - [Teste TestImplicitOk](#teste-testimplicitok)
+  - [Teste TestImplicitErr](#teste-testimpliciterr)
+  - [Teste TestIsOk](#teste-testisok)
+  - [Teste TestIsErr](#teste-testiserr)
+  - [Teste TestValueSuccess](#teste-testvaluesuccess)
+  - [Teste TestErrorFailure](#teste-testerrorfailure)
+  - [Teste TestMatchSuccess](#teste-testmatchsuccess)
+  - [Teste TestMatchError](#teste-testmatcherror)
+- [Registro dos Testes](#registro-dos-testes)
+- [Conclusão](#conclusão)
+- [Como configurar o Test Runner](#como-configurar-o-test-runner-para-ser-executado-em-um-projeto-vcl-automaticamente)
+
+
 ## Estrutura da Unit
 
 ### Interface
