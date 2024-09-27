@@ -33,6 +33,7 @@ type
     constructor Create(AMessage: string);
     property Message: string read FMessage;
   end;
+```
 
 #### Construtor
 
@@ -43,6 +44,7 @@ constructor TError.Create(AMessage: string);
 begin
   FMessage := AMessage;
 end;
+```
 
 - **ACode**: Código numérico que identifica o tipo de erro.
 - **ADescription**: Descrição detalhada do erro.
@@ -58,6 +60,7 @@ type
     IsOk: Boolean;
     Value: U;
   end;
+```
 
 - **IsOk**: Indicador booleano que representa se a operação foi bem-sucedida (`True`) ou resultou em erro (`False`).
 - **Value**: Valor resultante da operação, do tipo genérico `U`.
@@ -92,6 +95,7 @@ type
     // Método Match para implementar o Pattern Matching
     function Match<U>(OnOk: TFunc<T, U>; OnErr: TFunc<TErrResult, U>): TMatchResult<U>;
   end;
+```
 
 #### Operadores Implícitos
 
@@ -107,6 +111,7 @@ class operator TResultOptions<T>.Implicit(AError: TErrResult): TResultOptions<T>
 begin
   Result.InitErr(AError);
 end;
+```
 
 - **Implicit(AValue: T)**: Cria um `TResultOptions` representando sucesso com o valor `AValue`.
 - **Implicit(AError: TErrResult)**: Cria um `TResultOptions` representando erro com o objeto `AError`.
@@ -125,6 +130,7 @@ function TResultOptions<T>.IsErr: Boolean;
 begin
   Result := not FIsOk;
 end;
+```
 
 - **IsOk**: Retorna `True` se a operação foi bem-sucedida.
 - **IsErr**: Retorna `True` se a operação resultou em erro.
@@ -147,7 +153,7 @@ begin
     raise Exception.Create('Nenhum erro. A operação foi bem-sucedida.');
   Result := FError;
 end;
-
+```
 
 - **Value**: Retorna o valor de sucesso. Lança exceção se a operação resultou em erro.
 - **Error**: Retorna o objeto `TErrResult` do erro. Lança exceção se a operação foi bem-sucedida.
@@ -170,7 +176,7 @@ begin
 
   Result := matchResult;
 end;
-
+```
 
 - **OnOk**: Função a ser executada se a operação for bem-sucedida. Recebe o valor de sucesso (`T`) e retorna um resultado (`U`).
 - **OnErr**: Função a ser executada se a operação resultar em erro. Recebe o objeto `TErrResult` e retorna um resultado (`U`).
@@ -237,7 +243,7 @@ begin
   else
     ShowMessage(matchResult.Value);
 end;
-
+```
 
 ### Passo a Passo do Exemplo
 
