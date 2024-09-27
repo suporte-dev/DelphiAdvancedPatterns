@@ -13,7 +13,6 @@ A unit `ResultMatching` fornece uma estrutura genérica para o tratamento de res
 - [Como Utilizar](#como-utilizar)
   - [Exemplo de Uso](#exemplo-de-uso)
 - [Considerações Finais](#considerações-finais)
-- [Licença](#licença)
 
 ## Visão Geral
 
@@ -258,7 +257,7 @@ end;
 3. Utilizamos novamente o método `Match<string>` com as mesmas funções anônimas.
 4. Exibimos a mensagem de erro resultante.
 
-## Considerações Finais
+### Considerações Finais
 
 - **Flexibilidade**: A utilização de tipos genéricos permite que a estrutura `ResultMatching` seja reutilizável para diferentes tipos de operações e resultados, aumentando a flexibilidade do código.
   
