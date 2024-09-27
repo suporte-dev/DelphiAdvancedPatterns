@@ -177,7 +177,7 @@ end;
 - **Retorno**: Um `TMatchResult<U>` contendo o resultado da função executada e um indicador se foi sucesso ou erro.
 
 
-## Como Utilizar
+### Como Utilizar
 
 A seguir, apresentamos um exemplo de como utilizar a unit `ResultMatching` para tratar resultados de operações que podem ter sucesso ou falhar.
 
