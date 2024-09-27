@@ -5,24 +5,22 @@ A unit verifica o comportamento correto dos métodos e operadores implícitos, a
 
 # Sumário
 
-- [Visão Geral](#visão-geral)
-- [Tipos e Classes](#tipos-e-classes)
-  - [TError](#terror)
-  - [TErrResult](#terrresult)
-  - [TMatchResult<U>](#tmatchresultu)
-  - [TResultOptions<T>](#tresultoptionst)
+- [Unit de Teste: `TestResultMatching`](#unit-de-teste-testresultmatching)
+- [Estrutura da Unit](#estrutura-da-unit)
+  - [Interface](#interface)
 - [Implementação dos Testes](#implementação-dos-testes)
-  - [Teste TestImplicitOk](#teste-testimplicitok)
-  - [Teste TestImplicitErr](#teste-testimpliciterr)
-  - [Teste TestIsOk](#teste-testisok)
-  - [Teste TestIsErr](#teste-testiserr)
-  - [Teste TestValueSuccess](#teste-testvaluesuccess)
-  - [Teste TestErrorFailure](#teste-testerrorfailure)
-  - [Teste TestMatchSuccess](#teste-testmatchsuccess)
-  - [Teste TestMatchError](#teste-testmatcherror)
+  - [Teste `TestImplicitOk`](#teste-testimplicitok)
+  - [Teste `TestImplicitErr`](#teste-testimpliciterr)
+  - [Teste `TestIsOk`](#teste-testisok)
+  - [Teste `TestIsErr`](#teste-testiserr)
+  - [Teste `TestValueSuccess`](#teste-testvaluesuccess)
+  - [Teste `TestErrorFailure`](#teste-testerrorfailure)
+  - [Teste `TestMatchSuccess`](#teste-testmatchsuccess)
+  - [Teste `TestMatchError`](#teste-testmatcherror)
 - [Registro dos Testes](#registro-dos-testes)
 - [Conclusão](#conclusão)
-- [Como configurar o Test Runner](#como-configurar-o-test-runner-para-ser-executado-em-um-projeto-vcl-automaticamente)
+- [Como configurar o Test Runner para ser executado em um projeto VCL automaticamente](#como-configurar-o-test-runner-para-ser-executado-em-um-projeto-vcl-automaticamente)
+  - [Exemplo](#exemplo)
 
 
 ## Estrutura da Unit
