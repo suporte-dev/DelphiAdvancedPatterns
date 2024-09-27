@@ -70,6 +70,7 @@ begin
     ShowMessage(matchResult.Value);
 end;
 
-Veja o código completo da unit ResultMatching (https://github.com/suporte-dev/DelphiAdvancedPatterns/blob/main/ResultMatching.pas)
+Veja o código completo da unit: [ResultMatching.pas](ResultMatching.pas)
+
 
 
