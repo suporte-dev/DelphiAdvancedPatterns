@@ -202,11 +202,14 @@ initialization
 ### Conclusão
 
 Esta unit de teste cobre os principais comportamentos esperados da unit `ResultMatching`.
-Ela verifica o funcionamento dos operadores implícitos, os métodos `IsOk` e `IsErr`, bem como o sistema de **Pattern Matching** implementado no método `Match`.
+Ela verifica o funcionamento dos operadores implícitos, os métodos `IsOk` e `IsErr`,
+bem como o sistema de **Pattern Matching** implementado no método `Match`.
 
-Para rodar esta unit de teste, basta incluir a unit `TestResultMatching` no seu projeto de teste DUnit e executar o **DUnit Test Runner** ou:
+Para rodar esta unit de teste, basta incluir a unit `TestResultMatching` no seu projeto de teste DUnit e
+executar o **DUnit Test Runner** ou:
 
-### Como configurar o Test Runner para ser executado em um projeto VCL automaticamente sem a criação de um DUnit Project:
+### Como configurar o Test Runner para ser executado em um projeto VCL automaticamente
+sem a criação de um DUnit Project:
 
 Para configurar o **Test Runner** para executar os testes automaticamente em um projeto VCL, siga os seguintes passos:
 
