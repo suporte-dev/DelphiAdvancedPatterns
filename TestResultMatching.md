@@ -17,6 +17,8 @@ A unit verifica o comportamento correto dos métodos e operadores implícitos, a
   - [Teste `TestErrorFailure`](#teste-testerrorfailure)
   - [Teste `TestMatchSuccess`](#teste-testmatchsuccess)
   - [Teste `TestMatchError`](#teste-testmatcherror)
+  - [Teste `TestMatchProceduresSuccess`](#teste-testmatchproceduressuccess)
+  - [Teste `TestMatchProceduresError`](#teste-testmatchprocedureserror)
 - [Registro dos Testes](#registro-dos-testes)
 - [Conclusão](#conclusão)
 - [Como configurar o Test Runner para ser executado em um projeto VCL automaticamente](#como-configurar-o-test-runner-para-ser-executado-em-um-projeto-vcl-automaticamente)
@@ -52,6 +54,8 @@ type
     procedure TestErrorFailure;
     procedure TestMatchSuccess;
     procedure TestMatchError;
+    procedure TestMatchProceduresSuccess;
+    procedure TestMatchProceduresError;
   end;
 ```
 ### Implementação dos Testes
@@ -209,6 +213,64 @@ begin
 end;
 ```
 
+#### Teste `TestMatchProceduresSuccess`
+
+Verifica o funcionamento do `MatchProcedures` em casos de sucesso.
+
+```delphi
+procedure TestTResultOptions.TestMatchProceduresSuccess;
+var
+  Result: TResultOptions<Integer>;
+  SuccessMessage: string;
+begin
+  Result := 10;
+  
+  // Utilizando o MatchProcedures para testar o sucesso
+  Result.MatchProcedures(
+    procedure(Value: Integer)
+    begin
+      SuccessMessage := 'Sucesso: ' + IntToStr(Value);
+    end,
+    procedure(Err: TErrResult)
+    begin
+      SuccessMessage := 'Erro inesperado';
+    end
+  );
+
+  CheckEquals('Sucesso: 10', SuccessMessage, 'A mensagem de sucesso deveria ser "Sucesso: 10".');
+end;
+```
+
+#### Teste `TestMatchProceduresError`
+
+Verifica o funcionamento do `MatchProcedures` em casos de erro.
+
+```delphi
+procedure TestTResultOptions.TestMatchProceduresError;
+var
+  Error: TErrResult;
+  Result: TResultOptions<Integer>;
+  ErrorMessage: string;
+begin
+  Error := TErrResult.Create(404, 'Recurso não encontrado');
+  Result := Error;
+
+  // Utilizando o MatchProcedures para testar o erro
+  Result.MatchProcedures(
+    procedure(Value: Integer)
+    begin
+      ErrorMessage := 'Sucesso inesperado';
+    end,
+    procedure(Err: TErrResult)
+    begin
+      ErrorMessage := 'Erro: ' + IntToStr(Err.Code) + ' - ' + Err.Description;
+    end
+  );
+
+  CheckEquals('Erro: 404 - Recurso não encontrado', ErrorMessage, 'A mensagem de erro deveria ser "Erro: 404 - Recurso não encontrado".');
+end;
+```
+
 ### Registro dos Testes
 
 Os testes são registrados no bloco `initialization`, o que garante que eles sejam executados pelo **DUnit Test Runner**.
@@ -223,10 +285,7 @@ initialization
 
 Esta unit de teste cobre os principais comportamentos esperados da unit `ResultMatching`.
 Ela verifica o funcionamento dos operadores implícitos, os métodos `IsOk` e `IsErr`,
-bem como o sistema de **Pattern Matching** implementado no método `Match`.
-
-Para rodar esta unit de teste, basta incluir a unit `TestResultMatching` no seu projeto de teste DUnit e
-executar o **DUnit Test Runner** ou:
+bem como o sistema de **Pattern Matching** implementado no método `Match` e nas **procedures anônimas** no `MatchProcedures`.
 
 ### Como configurar o Test Runner para ser executado em um projeto VCL automaticamente
 sem a criação de um DUnit Project:
@@ -259,6 +318,3 @@ begin
   Application.Run;
 end.
 ```
-
-
-
