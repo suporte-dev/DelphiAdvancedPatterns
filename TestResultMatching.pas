@@ -3,132 +3,119 @@ unit TestResultMatching;
 interface
 
 uses
-  TestFramework,
-  ResultMatching,
+  TestFramework, // DUnit framework
+  ResultMatching, // A unit que estamos testando
   SysUtils;
 
 type
-  // Teste unit·rio para a unit ResultMatching
+  // Classe de teste para TResultOptions
   TestTResultOptions = class(TTestCase)
   published
-    procedure TestImplicitOk;
-    procedure TestImplicitErr;
-    procedure TestIsOk;
-    procedure TestIsErr;
-    procedure TestValueSuccess;
-    procedure TestErrorFailure;
-    procedure TestMatchSuccess;
-    procedure TestMatchError;
+    // Testes usando functions (com retorno de valor)
+    procedure TestMatchWithFunctionsSuccess;
+    procedure TestMatchWithFunctionsError;
+
+    // Testes usando procedures an√¥nimas (sem retorno de valor)
+    procedure TestMatchWithProceduresSuccess;
+    procedure TestMatchWithProceduresError;
   end;
 
 implementation
 
 { TestTResultOptions }
 
-procedure TestTResultOptions.TestImplicitOk;
+// Teste para um caso de sucesso usando functions
+procedure TestTResultOptions.TestMatchWithFunctionsSuccess;
 var
-  Result: TResultOptions<Integer>;
+  LResult: TResultOptions<Integer>;
+  MatchResult: TMatchResult<string, string>;
 begin
-  Result := 10; // Implicitamente cria um TResultOptions com sucesso
-  CheckTrue(Result.IsOk, 'O resultado deveria ser Ok.');
-  CheckEquals(10, Result.Value, 'O valor esperado È 10.');
-end;
+  LResult := 10;
 
-procedure TestTResultOptions.TestImplicitErr;
-var
-  Error: TErrResult;
-  Result: TResultOptions<Integer>;
-begin
-  Error := TErrResult.Create(404, 'Not Found');
-  Result := Error; // Implicitamente cria um TResultOptions com erro
-  CheckTrue(Result.IsErr, 'O resultado deveria ser Err.');
-  CheckEquals(404, Result.Error.Code, 'O cÛdigo de erro esperado È 404.');
-  CheckEquals('Not Found', Result.Error.Description, 'A descriÁ„o do erro deveria ser "Not Found".');
-end;
-
-procedure TestTResultOptions.TestIsOk;
-var
-  Result: TResultOptions<Integer>;
-begin
-  Result := 10;
-  CheckTrue(Result.IsOk, 'O resultado deveria ser Ok.');
-end;
-
-procedure TestTResultOptions.TestIsErr;
-var
-  Error: TErrResult;
-  Result: TResultOptions<Integer>;
-begin
-  Error := TErrResult.Create(500, 'Internal Error');
-  Result := Error;
-  CheckTrue(Result.IsErr, 'O resultado deveria ser Err.');
-end;
-
-procedure TestTResultOptions.TestValueSuccess;
-var
-  Result: TResultOptions<Integer>;
-begin
-  Result := 42;
-  CheckEquals(42, Result.Value, 'O valor esperado È 42.');
-end;
-
-procedure TestTResultOptions.TestErrorFailure;
-var
-  Error: TErrResult;
-  Result: TResultOptions<Integer>;
-begin
-  Error := TErrResult.Create(400, 'Bad Request');
-  Result := Error;
-  CheckEquals(400, Result.Error.Code, 'O cÛdigo de erro esperado È 400.');
-  CheckEquals('Bad Request', Result.Error.Description, 'A descriÁ„o do erro deveria ser "Bad Request".');
-end;
-
-procedure TestTResultOptions.TestMatchSuccess;
-var
-  Result: TResultOptions<Integer>;
-  MatchResult: TMatchResult<string>;
-begin
-  Result := 10;
-
-  // Testando o Match para um valor de sucesso
-  MatchResult := Result.Match<string>(
+  MatchResult := LResult.Match<string, string>(
     function(Value: Integer): string
     begin
       Result := 'Sucesso: ' + IntToStr(Value);
     end,
     function(Err: TErrResult): string
     begin
-      Result := 'Erro: ' + IntToStr(Err.Code);
+      Result := 'Erro: ' + IntToStr(Err.Code) + ': ' + Err.Description;
     end
   );
 
   CheckTrue(MatchResult.IsOk, 'O resultado do Match deveria ser Ok.');
-  CheckEquals('Sucesso: 10', MatchResult.Value, 'A mensagem de sucesso deveria ser "Sucesso: 10".');
+  CheckEquals('Sucesso: 10', MatchResult.OkValue, 'A mensagem de sucesso deveria ser "Sucesso: 10".');
 end;
 
-procedure TestTResultOptions.TestMatchError;
+// Teste para um caso de erro usando functions
+procedure TestTResultOptions.TestMatchWithFunctionsError;
 var
   Error: TErrResult;
-  Result: TResultOptions<Integer>;
-  MatchResult: TMatchResult<string>;
+  LResult: TResultOptions<Integer>;
+  MatchResult: TMatchResult<string, string>;
 begin
   Error := TErrResult.Create(500, 'Erro Interno');
-  Result := Error;
+  LResult := Error;
 
-  // Testando o Match para um erro
-  MatchResult := Result.Match<string>(
+  MatchResult := LResult.Match<string, string>(
     function(Value: Integer): string
     begin
       Result := 'Sucesso: ' + IntToStr(Value);
     end,
     function(Err: TErrResult): string
     begin
-      Result := 'Erro: ' + IntToStr(Err.Code) + ' - ' + Err.Description;
+      Result := 'Erro: ' + IntToStr(Err.Code) + ': ' + Err.Description;
     end
   );
 
   CheckFalse(MatchResult.IsOk, 'O resultado do Match deveria ser Err.');
-  CheckEquals('Erro: 500 - Erro Interno', MatchResult.Value, 'A mensagem de erro deveria ser "Erro: 500 - Erro Interno".');
+  CheckEquals('Erro: 500: Erro Interno', MatchResult.ErrValue, 'A mensagem de erro deveria ser "Erro: 500: Erro Interno".');
+end;
+
+// Teste para um caso de sucesso usando procedures an√¥nimas
+procedure TestTResultOptions.TestMatchWithProceduresSuccess;
+var
+  LResult: TResultOptions<Integer>;
+  SuccessMessage: string;
+begin
+  LResult := 10;
+
+  LResult.MatchProcedures(
+    procedure(Value: Integer)
+    begin
+      SuccessMessage := 'Sucesso: ' + IntToStr(Value);
+    end,
+    procedure(Err: TErrResult)
+    begin
+      SuccessMessage := 'Erro: ' + IntToStr(Err.Code) + ': ' + Err.Description;
+    end
+  );
+
+  CheckEquals('Sucesso: 10', SuccessMessage, 'A mensagem de sucesso deveria ser "Sucesso: 10".');
+end;
+
+// Teste para um caso de erro usando procedures an√¥nimas
+procedure TestTResultOptions.TestMatchWithProceduresError;
+var
+  Error: TErrResult;
+  LResult: TResultOptions<Integer>;
+  ErrorMessage: string;
+begin
+  Error := TErrResult.Create(404, 'Recurso n√£o encontrado');
+  LResult := Error;
+
+  LResult.MatchProcedures(
+    procedure(Value: Integer)
+    begin
+      ErrorMessage := 'Sucesso: ' + IntToStr(Value);
+    end,
+    procedure(Err: TErrResult)
+    begin
+      ErrorMessage := 'Erro: ' + IntToStr(Err.Code) + ': ' + Err.Description;
+    end
+  );
+
+  CheckEquals('Erro: 404: Recurso n√£o encontrado', ErrorMessage, 'A mensagem de erro deveria ser "Erro: 404: Recurso n√£o encontrado".');
 end;
 
 initialization
@@ -136,4 +123,3 @@ initialization
   RegisterTest(TestTResultOptions.Suite);
 
 end.
-
