@@ -6,8 +6,8 @@ A unit `ResultMatching` fornece uma estrutura genérica para o tratamento de res
 
 - [Visão Geral](#visão-geral)
 - [Tipos e Classes](#tipos-e-classes)
-  - [TError](#terror)
-  - [TMatchResult\<U\>](#tmatchresultu)
+  - [TErrResult](#terrresult)
+  - [TMatchResult\<U, E\>](#tmatchresultu-e)
   - [TResultOptions\<T\>](#tresultoptionst)
 - [Como Utilizar](#como-utilizar)
   - [Exemplo de Uso](#exemplo-de-uso)
@@ -19,59 +19,79 @@ A unit `ResultMatching` foi projetada para facilitar o gerenciamento de resultad
 
 ### Tipos e Classes
 
-### TError
+### TErrResult
 
-A classe `TError` encapsula uma mensagem de erro simples. É utilizada para representar erros básicos que podem ocorrer durante a execução de uma operação.
+O `TErrResult` encapsula detalhes mais específicos sobre um erro. Agora implementado como um **record** com operadores **implicit** para facilitar a criação e o uso de erros.
 
 ```delphi
 type
-  // Classe que encapsula uma mensagem de erro simples
-  TError = class
+  TErrResult = record
   private
-    FMessage: string;
+    FCode: Integer;
+    FDescription: string;
   public
-    constructor Create(AMessage: string);
-    property Message: string read FMessage;
+    constructor Create(ACode: Integer; ADescription: string);
+    class operator Implicit(AError: string): TErrResult;
+    class operator Implicit(ACode: Integer): TErrResult;
+    property Code: Integer read FCode;
+    property Description: string read FDescription;
   end;
 ```
 
 #### Construtor
 
-O construtor da classe `TError` inicializa a mensagem de erro.
+O construtor da `TErrResult` inicializa o código de erro e a descrição.
 
 ```delphi
-constructor TError.Create(AMessage: string);
+constructor TErrResult.Create(ACode: Integer; ADescription: string);
 begin
-  FMessage := AMessage;
+  FCode := ACode;
+  FDescription := ADescription;
 end;
 ```
 
 - **ACode**: Código numérico que identifica o tipo de erro.
 - **ADescription**: Descrição detalhada do erro.
 
-### TMatchResult\<U\>
+#### Operadores Implícitos
 
-O record `TMatchResult<U>` é uma estrutura genérica utilizada para armazenar o resultado de uma operação, indicando se foi bem-sucedida e o valor resultante, que pode ser um valor de sucesso ou uma mensagem de erro.
+Permitem criar instâncias de `TErrResult` de maneira mais conveniente.
+
+```delphi
+class operator TErrResult.Implicit(AError: string): TErrResult;
+begin
+  Result := TErrResult.Create(0, AError);
+end;
+
+class operator TErrResult.Implicit(ACode: Integer): TErrResult;
+begin
+  Result := TErrResult.Create(ACode, 'Erro desconhecido');
+end;
+```
+
+### TMatchResult\<U, E\>
+
+O record `TMatchResult<U, E>` é utilizado para armazenar o resultado de uma operação, indicando se foi bem-sucedida e o valor resultante, seja um valor de sucesso ou uma mensagem de erro.
 
 ```delphi
 type
-  // Record genérico para armazenar o resultado do Match
-  TMatchResult<U> = record
+  TMatchResult<U, E> = record
     IsOk: Boolean;
-    Value: U;
+    OkValue: U;
+    ErrValue: E;
   end;
 ```
 
 - **IsOk**: Indicador booleano que representa se a operação foi bem-sucedida (`True`) ou resultou em erro (`False`).
-- **Value**: Valor resultante da operação, do tipo genérico `U`.
+- **OkValue**: Valor resultante da operação, do tipo genérico `U`.
+- **ErrValue**: Valor do erro, do tipo genérico `E`.
 
 ### TResultOptions\<T\>
 
-O record `TResultOptions<T>` representa uma operação que pode ser bem-sucedida ou falhar. Ele encapsula tanto o valor de sucesso (`T`) quanto as informações de erro (`TErrResult`). Além disso, fornece métodos para verificar o estado da operação e acessar os resultados de forma segura.
+O record `TResultOptions<T>` representa uma operação que pode ser bem-sucedida ou falhar. Ele encapsula tanto o valor de sucesso quanto as informações de erro.
 
 ```delphi
 type
-  // Record genérico que representa uma operação que pode ser bem-sucedida ou falhar
   TResultOptions<T> = record
   private
     FValue: T;
@@ -80,26 +100,23 @@ type
     procedure InitOk(AValue: T);
     procedure InitErr(AError: TErrResult);
   public
-    // Operadores implícitos para facilitar a criação de TResultOptions
     class operator Implicit(AValue: T): TResultOptions<T>;
     class operator Implicit(AError: TErrResult): TResultOptions<T>;
 
-    // Métodos para verificar o estado da operação
     function IsOk: Boolean;
     function IsErr: Boolean;
 
-    // Métodos para acessar o valor ou o erro
     function Value: T;
     function Error: TErrResult;
 
-    // Método Match para implementar o Pattern Matching
-    function Match<U>(OnOk: TFunc<T, U>; OnErr: TFunc<TErrResult, U>): TMatchResult<U>;
+    function Match<U, E>(OnOk: TFunc<T, U>; OnErr: TFunc<TErrResult, E>): TMatchResult<U, E>;
+    procedure MatchProcedures(OnOk: TProc<T>; OnErr: TProc<TErrResult>);
   end;
 ```
 
 #### Operadores Implícitos
 
-Permitem criar instâncias de `TResultOptions` de forma simplificada, atribuindo diretamente um valor de sucesso ou um erro.
+Facilitam a criação de `TResultOptions` diretamente a partir de um valor de sucesso ou um erro.
 
 ```delphi
 class operator TResultOptions<T>.Implicit(AValue: T): TResultOptions<T>;
@@ -113,12 +130,10 @@ begin
 end;
 ```
 
-- **Implicit(AValue: T)**: Cria um `TResultOptions` representando sucesso com o valor `AValue`.
-- **Implicit(AError: TErrResult)**: Cria um `TResultOptions` representando erro com o objeto `AError`.
+- **Implicit(AValue: T)**: Cria um `TResultOptions` representando sucesso.
+- **Implicit(AError: TErrResult)**: Cria um `TResultOptions` representando erro.
 
 #### Métodos de Verificação
-
-Permitem verificar o estado da operação.
 
 ```delphi
 function TResultOptions<T>.IsOk: Boolean;
@@ -136,8 +151,6 @@ end;
 - **IsErr**: Retorna `True` se a operação resultou em erro.
 
 #### Métodos de Acesso
-
-Permitem acessar o valor de sucesso ou o erro de forma segura, lançando exceções se forem acessados incorretamente.
 
 ```delphi
 function TResultOptions<T>.Value: T;
@@ -160,34 +173,47 @@ end;
 
 #### Método Match
 
-Implementa um sistema de **Pattern Matching**, permitindo que você defina como lidar com os casos de sucesso e erro de forma clara e concisa.
+Implementa um sistema de **Pattern Matching**, permitindo definir como lidar com os casos de sucesso e erro de forma clara e concisa.
 
 ```delphi
-function TResultOptions<T>.Match<U>(OnOk: TFunc<T, U>; OnErr: TFunc<TErrResult, U>): TMatchResult<U>;
+function TResultOptions<T>.Match<U, E>(OnOk: TFunc<T, U>; OnErr: TFunc<TErrResult, E>): TMatchResult<U, E>;
 var
-  matchResult: TMatchResult<U>;
+  matchResult: TMatchResult<U, E>;
 begin
   matchResult.IsOk := FIsOk;
 
   if FIsOk then
-    matchResult.Value := OnOk(FValue)  // Passa FValue para a função OnOk
+    matchResult.OkValue := OnOk(FValue)
   else
-    matchResult.Value := OnErr(FError); // Passa FError para a função OnErr
+    matchResult.ErrValue := OnErr(FError);
 
   Result := matchResult;
 end;
 ```
 
 - **OnOk**: Função a ser executada se a operação for bem-sucedida. Recebe o valor de sucesso (`T`) e retorna um resultado (`U`).
-- **OnErr**: Função a ser executada se a operação resultar em erro. Recebe o objeto `TErrResult` e retorna um resultado (`U`).
-- **Retorno**: Um `TMatchResult<U>` contendo o resultado da função executada e um indicador se foi sucesso ou erro.
+- **OnErr**: Função a ser executada se a operação resultar em erro. Recebe o objeto `TErrResult` e retorna um resultado (`E`).
+- **Retorno**: Um `TMatchResult<U, E>` contendo o resultado da função executada e um indicador de sucesso ou erro.
 
+#### Método MatchProcedures
+
+Permite executar ações sem retorno para sucesso ou erro.
+
+```delphi
+procedure TResultOptions<T>.MatchProcedures(OnOk: TProc<T>; OnErr: TProc<TErrResult>);
+begin
+  if FIsOk then
+    OnOk(FValue)
+  else
+    OnErr(FError);
+end;
+```
 
 ### Como Utilizar
 
-A seguir, apresentamos um exemplo de como utilizar a unit `ResultMatching` para tratar resultados de operações que podem ter sucesso ou falhar.
+A seguir, um exemplo de como utilizar a unit `ResultMatching` para tratar resultados de operações.
 
-### Exemplo de Uso
+### Exemplo de Uso com Funções
 
 ```delphi
 uses
@@ -197,82 +223,123 @@ procedure TestPatternMatching;
 var
   resultSuccess: TResultOptions<Integer>;
   resultError: TResultOptions<Integer>;
-  matchResult: TMatchResult<string>;
+  matchResult: TMatchResult<string, string>;
   error: TErrResult;
 begin
   // Simulando um sucesso
-  resultSuccess := 10; // Utilizando o operador implícito
+  resultSuccess := 10;
 
-  // Utilizando o método Match para tratar o resultado
-  matchResult := resultSuccess.Match<string>(
+  // Utilizando o método Match para tratar o sucesso
+  matchResult := resultSuccess.Match<string, string>(
     function(Value: Integer): string
     begin
-      Result := 'Sucesso: ' + Value.ToString;
+      Result := 'Sucesso: ' + IntToStr(Value);
     end,
     function(Err: TErrResult): string
     begin
-      Result := 'Erro ' + Err.Code.ToString + ': ' + Err.Description;
+      Result := 'Erro: ' + IntToStr(Err.Code) + ': ' + Err.Description;
     end
   );
 
-  // Exibindo o resultado
   if matchResult.IsOk then
-    ShowMessage(matchResult.Value)
+    ShowMessage(matchResult.OkValue)
   else
-    ShowMessage(matchResult.Value);
+    ShowMessage(matchResult.ErrValue);
 
   // Simulando um erro
   error := TErrResult.Create(404, 'Recurso não encontrado');
-  resultError := error; // Utilizando o operador implícito
+  resultError := error;
 
   // Utilizando o método Match para tratar o erro
-  matchResult := resultError.Match<string>(
+  matchResult := resultError.Match<string, string>(
     function(Value: Integer): string
     begin
-      Result := 'Sucesso: ' + Value.ToString;
+      Result := 'Sucesso: ' + IntToStr(Value);
     end,
     function(Err: TErrResult): string
     begin
-      Result := 'Erro ' + Err.Code.ToString + ': ' + Err.Description;
+      Result := 'Erro: ' + IntToStr(Err.Code) + ': ' + Err.Description;
     end
   );
 
-  // Exibindo o erro
   if matchResult.IsOk then
-    ShowMessage(matchResult.Value)
+    ShowMessage(matchResult.OkValue)
   else
-    ShowMessage(matchResult.Value);
+    ShowMessage(matchResult.ErrValue);
+end;
+```
+
+### Exemplo de Uso com Procedures
+
+```delphi
+uses
+  ResultMatching, System.SysUtils, Vcl.Dialogs;
+
+procedure TestPatternMatchingWithProcedures;
+var
+  resultSuccess: TResultOptions<Integer>;
+  resultError: TResultOptions<Integer>;
+  error: TErrResult;
+begin
+  // Simulando um sucesso
+  resultSuccess := 10;
+
+  // Utilizando o método MatchProcedures para tratar o sucesso e erro
+  resultSuccess.MatchProcedures(
+    procedure(Value: Integer)
+    begin
+      ShowMessage('Sucesso: ' + IntToStr(Value));
+    end,
+    procedure(Err: TErrResult)
+    begin
+      ShowMessage('Erro: ' + IntToStr(Err.Code) + ': ' + Err.Description);
+    end
+  );
+
+  // Simulando um erro
+  error := TErrResult.Create(404, 'Recurso não encontrado');
+  resultError := error;
+
+  // Utilizando o método MatchProcedures para tratar o erro
+  resultError.MatchProcedures(
+    procedure(Value: Integer)
+    begin
+      ShowMessage('Sucesso: ' + IntToStr(Value));
+    end,
+    procedure(Err: TErrResult)
+    begin
+      ShowMessage('Erro: ' + IntToStr(Err.Code) + ': ' + Err.Description);
+    end
+  );
 end;
 ```
 
 ### Passo a Passo do Exemplo
 
-#### Simulando um Sucesso:
+#### Simulando um Sucesso com Funções:
 
-1. Atribuímos o valor `10` a `resultSuccess`, criando um `TResultOptions<Integer>` representando sucesso.
-2. Utilizamos o método `Match<string>` passando duas funções anônimas:
-   - **OnOk**: Recebe o valor de sucesso (`Integer`) e retorna uma string de sucesso.
-   - **OnErr**: Recebe o objeto `TErrResult` e retorna uma string de erro.
+1. Atribuímos o valor `10` a `resultSuccess`, criando um `TResultOptions<Integer>`.
+2. Utilizamos o método `Match<string, string>` passando duas funções anônimas:
+   - **OnOk**: Retorna uma string com a mensagem de sucesso.
+   - **OnErr**: Retorna uma string com a mensagem de erro.
 3. Exibimos a mensagem de sucesso resultante.
 
-#### Simulando um Erro:
+#### Simulando um Sucesso com Procedures:
 
-1. Criamos uma instância de `TErrResult` com código `404` e descrição `'Recurso não encontrado'`.
-2. Atribuímos o objeto `error` a `resultError`, criando um `TResultOptions<Integer>` representando erro.
-3. Utilizamos novamente o método `Match<string>` com as mesmas funções anônimas.
-4. Exibimos a mensagem de erro resultante.
+1. Atribuímos o valor `10` a `resultSuccess`, criando um `TResultOptions<Integer>`.
+2. Utilizamos o método `MatchProcedures` passando dois **procedures** anônimos:
+   - **OnOk**: Executa uma ação no caso de sucesso (mostra a mensagem).
+   - **OnErr**: Executa uma ação no caso de erro (mostra a mensagem).
 
 ### Considerações Finais
 
-- **Flexibilidade**: A utilização de tipos genéricos permite que a estrutura `ResultMatching` seja reutilizável para diferentes tipos de operações e resultados, aumentando a flexibilidade do código.
+- **Flexibilidade**: A estrutura genérica permite que `ResultMatching` seja reutilizável para diferentes tipos de operações e resultados.
   
-- **Segurança**: Os métodos de acesso (`Value` e `Error`) garantem que o valor de sucesso ou o erro sejam acessados de forma segura, prevenindo acessos incorretos que podem levar a exceções não tratadas.
+- **Segurança**: Métodos de acesso garantem que o valor de sucesso ou erro sejam acessados corretamente.
 
-- **Legibilidade**: O método `Match` permite que o tratamento de resultados seja feito de forma clara e concisa, melhorando a legibilidade e a manutenção do código.
+- **Legibilidade**: O método `Match` melhora a clareza do código ao tratar diferentes cenários, e o `MatchProcedures` permite uma abordagem mais direta para executar ações.
 
-- **Extensibilidade**: A estrutura pode ser facilmente estendida para suportar diferentes tipos de erros ou resultados adicionais, conforme as necessidades do projeto.
-
-Com esta unit, você pode implementar um sistema robusto de gerenciamento de resultados em suas aplicações Delphi, facilitando o tratamento de operações que podem falhar e melhorando a qualidade e a organização do seu código.
+- **Extensibilidade**: A estrutura pode ser estendida para suportar diferentes tipos de erros ou operações.
 
 ## Licença
 
